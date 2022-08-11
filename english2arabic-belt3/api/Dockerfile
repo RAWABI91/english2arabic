@@ -1,17 +1,7 @@
 FROM node:10-alpine
-
-RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
-
-WORKDIR /home/node/app
-
-COPY package*.json ./
-
-USER node
-
+WORKDIR /var/www
+COPY . .
 RUN npm install
-
-COPY --chown=node:node . .
-
+VOLUME [ "/var/www" ]
 EXPOSE 3001
-
-CMD [ "node", "app.js" ]
+CMD [ "node", "index.js" ]
