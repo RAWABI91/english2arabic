@@ -1,22 +1,22 @@
 version: "3.7"
-
 services:
+
   api:
     build: 
       context: ./api
     container_name: api
-    environment: 
-     - CONNECTION_STRING=postgres://postgres:postgres@db/postgres-db
-    depends_on:
-     - db
+    environment:
+      - CONNECTION_STRING=postgres://postgres:postgres@db/postgres-db
     command: node index.js
-    volumes:
-      - ./api:/api
     ports:
       - "3001:3001"
     networks:
-      - privet-nw
-      - puplic-nw
+      - private_nw
+      - public_nw
+    volumes:
+      - ./api:/api
+    depends_on:
+      - db
 
   web:
     build: 
@@ -24,30 +24,31 @@ services:
     container_name: web
     environment:
       - API_URL=http://api:3001/data
-    volumes:
-      - ./web:/web
-    depends_on:
-      - api
     command: node index.js
     ports:
       - "80:3000"
     networks:
-      - puplic-nw
+      - public_nw
+    volumes:
+      - ./web:/web    
+    depends_on:
+      - api
 
   db:
     image: postgres:11.2-alpine
     ports: ["5432"]
+    container_name: db
     environment:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "postgres"
       POSTGRES_DB: "postgres-db"
-    volumes:
-      - "/home/ubuntu/english2arabic/sql_scripts/:/docker-entrypoint-initdb.d"
     networks:
-      - privet-nw
+      - private_nw
+    volumes:
+      - "/home/ubuntu/english2arabic/sql_scripts/:/docker-entrypoint-initdb.d"  
 
 networks:
-  privet-nw:  #api
+  public_nw:
       driver: bridge
-  puplic-nw:  #web
+  private_nw:
       driver: bridge

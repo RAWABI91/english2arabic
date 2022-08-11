@@ -1,4 +1,5 @@
 FROM node:10-alpine
+LABEL author="Rawanbi Mohammed"
 WORKDIR /var/www
 COPY . .
 RUN npm install
